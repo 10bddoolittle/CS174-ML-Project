@@ -54,11 +54,6 @@ working_9 = 'Other';%not implemented so far
 % filling in the data_users matrix
 for i = 1:num_examples
     
-    %
-    if i == 100
-        break;
-    end
-    
     % user_id
     data_users(i,1) = str2double(cell2mat(data{i+1}{1}(1)));
     
@@ -262,14 +257,14 @@ for i = 1:num_examples
         data_users(i,8) = -1;
     end
     
-    k = 100; %normalizing factor
+    nf = 100; %normalizing factor
     for j = 9 : N -1
         if ~strcmp((data{i+1}{1}(j)),'')
-            data_users(i,j) = (str2double(cell2mat(data{i+1}{1}(j))))/k;
+            data_users(i,j) = (str2double(cell2mat(data{i+1}{1}(j))))/nf;
         elseif strcmp((data{i+1}{1}(j)),'')
             data_users(i,j) = 0;
         else
-            data_users(i,j) = -1/k;
+            data_users(i,j) = -1/nf;
         end
     end
     
