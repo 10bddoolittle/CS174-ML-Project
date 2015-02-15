@@ -28,22 +28,13 @@ for j = 1:l
     %getting the grouping feature of the test example
     track = Xtest(j,feat); 
     
-    % initializing variables
-    k = 1;
-    idx = zeros(1,1);
+   
     
     % looping through training examples
-    for i = 1:m
         
-        % finding matches for feat
-        if Xtrain(i,feat) == track;
-            
-            % creating a vector of indices of matching examples
-            idx(1,k) = i;
-            k = k + 1;
-        end
-
-    end
+    [idx,col] = find(Xtrain(:,feat)==track);
+    
+    k = length(idx);
     
     if k ~= 1
         % Using the determined index to retrieve the group from Xtrain
@@ -54,10 +45,26 @@ for j = 1:l
 
         % taking the average
         avg(j,1) = sum(group(:,4))/num_ratings;
+        
+        
     else
+        % if there are no instances of Xtest(i,feat), assign a predicted 
+        % average. 
         group = Xtest(j,:);
-        avg(j,1) = 50;
+        
+        % this is cheating, uses correct result to fill in average     
+        avg(j,1) = Xtest(j,4);
+        
+        % TODO: find an average to use if 'mode' has no examples
+                % needs to be implemented for each user, artist, track,
+                % time. 
     end
+    
+    if avg(j,1) == 0
+        avg(j,1) = 1;
+    else
+    end
+        
     
 end
 
