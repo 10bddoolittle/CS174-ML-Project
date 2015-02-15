@@ -1,4 +1,4 @@
-function [avg] = average(Xtrain,Xtest,mode)
+function [avg,group] = average(Xtrain,Xtest,mode)
 
 % Inputs:  
 % Xtrain:  [m x n] 
@@ -15,20 +15,7 @@ function [avg] = average(Xtrain,Xtest,mode)
 
 
 % determining which feature to group
-if strcmp(mode,'artist') == 1
-    feat = 1;
-elseif strcmp(mode,'track') == 1
-    feat = 2;
-elseif strcmp(mode,'user') == 1
-    feat = 3;
-elseif strcmp(mode, 'rating' ) == 1
-    feat = 4;
-elseif strcmp(mode, 'time' ) == 1
-    feat = 5;
-else
-    fprintf('incorrect mode \n');
-end
-
+feat = mode_read(mode);
 
 % getting the size of the training set
 [m,n] = size(Xtrain);
@@ -68,6 +55,7 @@ for j = 1:l
         % taking the average
         avg(j,1) = sum(group(:,4))/num_ratings;
     else
+        group = Xtest(j,:);
         avg(j,1) = 50;
     end
     
