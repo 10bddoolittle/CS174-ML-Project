@@ -136,4 +136,4 @@ wrong_word
 wrong_heard_of
 wrong_own_artist_music
 
-save('data_words','data_words')
+save('data_words','data_words','-append')
