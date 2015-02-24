@@ -36,7 +36,7 @@ for j = 1:l
     
     k = length(idx);
     
-    if k ~= 1
+    if k > 1
         % Using the determined index to retrieve the group from Xtrain
         group = Xtrain(idx,:);
 

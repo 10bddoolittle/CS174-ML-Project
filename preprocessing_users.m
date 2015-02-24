@@ -18,6 +18,7 @@ data = cell(1,48646);
 eof_status = feof(fileID_words);
 %index variable 
 i = 0;
+
 while eof_status ~= 1
     i = i + 1;
     data{i} = textscan(fileID_words,formatSpec,N,'delimiter',','); 

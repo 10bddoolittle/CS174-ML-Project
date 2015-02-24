@@ -72,6 +72,16 @@ figure(2)
 plot(x,zeros(l,1),'.')
 
 figure(3)
-plot(x,trunc_gauss,'.')
-
+histogram(x,25)
+hold on
+plot(x,(8000*trunc_gauss),'rx')
+xl = xlabel('Rating');
+set(xl,'FontSize',14)
+yl = ylabel('Probability');
+set(yl,'FontSize',14)
+t = title('Truncated-Gaussian Model of Noise');
+set(t,'FontSize',20)
+l = legend('Track Rating Histogram','Gaussian Fit to Ratings');
+set(l,'FontSize',14)
+hold off
 end
