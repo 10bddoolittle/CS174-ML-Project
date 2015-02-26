@@ -18,7 +18,7 @@ predT = Xtest(:,2);
 
 for i = 1:m
     uidx = predU(i)+1;
-    tidx = predU(i)+1;
+    tidx = predT(i)+1;
     
     pred_y(i) = U(uidx,:)*T(:,tidx);
     
