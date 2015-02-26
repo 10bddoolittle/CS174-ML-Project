@@ -9,7 +9,9 @@ function error = MFcross_validation(Xtrain,data_users,N)
 % error     RMS error
 
 M = MFratings(Xtrain);
-U = MFusers(M,data_Users);
+U = MFusers(M,data_users);
+
+[m,n] = size(Xtrain);
 
 % creating a vector of indices of X
 idxperm = 1:m;
@@ -20,7 +22,7 @@ err_sum = 0;
 % looping through folds
 for j = 0:N-1
     
-   
+    tic;
     % creating fold from permuted data set    
     test = idxperm([floor(m / N * j + 1) : floor(m / N * (j + 1))]);
     
@@ -29,18 +31,20 @@ for j = 0:N-1
     train = setdiff(idxperm,test); 
     
     
-    M = MFratings(train);
     
+    Xtest = Xtrain(test,:);
+    Xt = Xtrain(train,:);
     
     T = MFtrain(M,U);
     
-    pred_y = MFpredict(T,test,U);
+    size(T)
+    pred_y = MFpredict(T,Xtest,U);
     
     correct_y = Xtrain(test,4);
     
     err_sum = err_sum + rmse(pred_y,correct_y);
     
-    
+    toc;
 end
 
 error = err_sum/N;
