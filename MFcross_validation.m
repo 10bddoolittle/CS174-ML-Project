@@ -1,4 +1,4 @@
-function error = MFcross_validation(Xtrain,data_users,N)
+function [error,lambda,gamma,pred_y,correct_y] = MFcross_validation(Xtrain,data_users,N,lambda,gamma)
 
 % INPUTS
 % Xtrain       training data of user ratings
@@ -10,6 +10,10 @@ function error = MFcross_validation(Xtrain,data_users,N)
 
 M = MFratings(Xtrain);
 U = MFusers(M,data_users);
+l = length(lambda);
+g = length(gamma);
+
+itmax = l*g
 
 [m,n] = size(Xtrain);
 
@@ -17,35 +21,47 @@ U = MFusers(M,data_users);
 idxperm = 1:m;
 % initializing err_sum
 err_sum = 0;
+% initializing error output
+error = zeros(l,g);
+iteration = 1;
+for i = 1:l
+    for k = 1:g
+        % looping through folds
+        for j = 0:N-1
+
+            tic;
+            iteration
+            itmax
+            % creating fold from permuted data set    
+            test = idxperm([floor(m / N * j + 1) : floor(m / N * (j + 1))]);
 
 
-% looping through folds
-for j = 0:N-1
-    
-    tic;
-    % creating fold from permuted data set    
-    test = idxperm([floor(m / N * j + 1) : floor(m / N * (j + 1))]);
-    
-  
-    % creating the set of indices used for validation
-    train = setdiff(idxperm,test); 
-    
-    
-    
-    Xtest = Xtrain(test,:);
-    Xt = Xtrain(train,:);
-    
-    T = MFtrain(M,U);
-    
-    size(T)
-    pred_y = MFpredict(T,Xtest,U);
-    
-    correct_y = Xtrain(test,4);
-    
-    err_sum = err_sum + rmse(pred_y,correct_y);
-    
-    toc;
+            % creating the set of indices used for validation
+            train = setdiff(idxperm,test); 
+
+            
+
+            Xtest = Xtrain(test,:);
+            Xt = Xtrain(train,:);
+
+            [T,Uidx] = MFtrain(M,U,lambda(i),gamma(k));
+
+            size(T)
+           
+            pred_y = MFpredict(T,Xtest,U,Uidx);
+
+            correct_y = Xtrain(test,4);
+
+            err_sum = err_sum + rmse(pred_y,correct_y);
+
+            toc;
+        end
+        iteration = iteration +1;
+        error(i,k) = err_sum/N;
+    end
 end
 
-error = err_sum/N;
+
+
+
 end
