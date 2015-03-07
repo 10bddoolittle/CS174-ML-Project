@@ -1,4 +1,4 @@
-function [T,U,Uidx] = MFtrain(M,U,lambda,gamma)
+function [T,U] = MFtrain_latent(M,lambda,gamma,latent)
 % learns weights for each track
 
 % Input
@@ -12,34 +12,26 @@ tic;
 %gamma = 0.001;
 
 [nUsers,nTracks] = size(M); 
-[~,nFeatures] = size(U);
+
 %initialize theta randomly
 
 %assign the initialized theta
 
+U = ones(nUsers,latent);
 
-
-T = zeros(nFeatures ,nTracks);
+T = zeros(latent,nTracks);
 
 
 
 %thetaInit = rand(nFeatures,1);
-thetaInit = ones(nFeatures,1);
+thetaInit = ones(latent,1);
 
 Ttrainidx = [];
 Utrainidx = [];
 
 % taking care of missing data (-1's)
 for iterUser = 1:nUsers
-    userProfile = U(iterUser,:);
-    
-    % finding -1's
-    markidx = find(userProfile == -1);
-    
-    % store indexes of -1's in cell Uidx
-    Uidx{iterUser} =  setdiff([1:nFeatures],markidx);
-    
-    
+
     Mrow = M(iterUser,:);
     
     markidx = find(Mrow == -1);
@@ -87,23 +79,21 @@ for iterTrack = Ttrainidx
         
         userProfile = U(iterUser,:);
 
-        idx = Uidx{iterUser};
-        % finding constant to rescale prediction by to account for
-        % missing features
-        renorm = sqrt(T(:,iterTrack)'*T(:,iterTrack))/sqrt(T(idx,iterTrack)'*T(idx,iterTrack));
+
         
         % learning weights for track
-        predictedRating = userProfile(idx)*T(idx,iterTrack)*renorm;
-        diff = actualRating - predictedRating;
-        %update T
-        T(idx,iterTrack) = T(idx,iterTrack)...
-                            + gamma*(diff*userProfile(idx)' - lambda*T(idx,iterTrack));
-                        
-        % learning latent features for users
-        predictedRating = userProfile(idx)*T(idx,iterTrack)*renorm;
+        predictedRating = userProfile*T(:,iterTrack);
         diff = actualRating - predictedRating;
         
-        U(iterUser,idx) = userProfile(idx)+gamma*(diff*T(idx,iterTrack)' - lambda*userProfile(idx));
+        %update T
+        T(:,iterTrack) = T(:,iterTrack)...
+                            + gamma*(diff*userProfile' - lambda*T(:,iterTrack));
+                        
+        % learning latent features for users
+        predictedRating = userProfile*T(:,iterTrack);
+        diff = actualRating - predictedRating;
+        
+        U(iterUser,:) = userProfile+gamma*(diff*T(:,iterTrack)' - lambda*userProfile);
         idx = 0;
         
     end

@@ -1,4 +1,4 @@
-function [error,lambda,gamma,pred_y,correct_y] = MFcross_validation(Xtrain,data_users,N,lambda,gamma)
+function [error,lambda,gamma,pred_y,correct_y] = MFcross_validation(Xtrain,data_users,N,lambda,gamma,latent)
 
 % INPUTS
 % Xtrain       training data of user ratings
@@ -44,11 +44,13 @@ for i = 1:l
             Xtest = Xtrain(test,:);
             Xt = Xtrain(train,:);
 
-            [T,Uidx] = MFtrain(M,U,lambda(i),gamma(k));
+            [T,U,Uidx] = MFtrain(M,U,lambda(i),gamma(k));
+            %[T,U] = MFtrain_latent(M,lambda(i),gamma(i),latent);
 
             size(T)
            
             pred_y = MFpredict(T,Xtest,U,Uidx);
+            %pred_y = MFpredict_latent(T,Xtest,U);
 
             correct_y = Xtrain(test,4);
 

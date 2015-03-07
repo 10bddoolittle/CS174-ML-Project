@@ -1,4 +1,4 @@
-function pred_y = MFpredict(T,Xtest,U,Uidx)
+function pred_y = MFpredict_latent(T,Xtest,U)
 % predicts rating for new set of users
 
 % INPUT 
@@ -21,12 +21,9 @@ for i = 1:m
     uidx = predU(i)+1;
     tidx = predT(i)+1;
     
-    idx = Uidx{uidx};
-    % finding constant to rescale prediction by to account for
-    % missing features
-    renorm = sqrt(T(:,tidx)'*T(:,tidx))/sqrt(T(idx,tidx)'*T(idx,tidx));
 
-    pred_y(i) = U(uidx,idx)*T(idx,tidx)*renorm;
+
+    pred_y(i) = U(uidx,:)*T(:,tidx);
     
     if pred_y(i) < 0
         pred_y(i) = 0;
