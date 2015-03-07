@@ -19,6 +19,9 @@ thetaInit = ones(nFeatures,1);
 %assign the initialized theta
 T = zeros(nFeatures,nTracks);
 
+Ttrainidx = [];
+Utrainidx = [];
+
 % taking care of missing data (-1's)
 for iterUser = 1:nUsers
     userProfile = U(iterUser,:);
@@ -30,37 +33,72 @@ for iterUser = 1:nUsers
     Uidx{iterUser} =  setdiff([1:nFeatures],markidx);
     
     
+    Mrow = M(iterUser,:);
+    
+    markidx = find(Mrow == -1);
+    
+    % indices of rows of M that are rated
+    MUidx{iterUser} = setdiff([1:nTracks],markidx);
+    
+    if ~isempty(MUidx{iterUser})
+        UTrainidx = cat(2,Utrainidx,iterUser);
+    else
+    end
+        
+        
+    
 end
 
-
+for iterTrack = 1:nTracks
+    Mcol = M(:,iterTrack);
+    
+    markidx = find(Mcol == -1);
+    
+    % indices of cols of M that are rated
+    MTidx{iterTrack} = setdiff([1:nUsers],markidx);
+    
+    if ~isempty(MTidx{iterTrack})
+        Ttrainidx = cat(2,Ttrainidx,iterTrack);
+    else
+    end
+end
 
 iter = 0;
 
 %gradient descent implementation
-for iterTrack = 1:nTracks
+while (iter < 1000)
+
+% looping through the rated tracks
+for iterTrack = Ttrainidx
     T(:,iterTrack) = thetaInit;
-    while (iter < 1000)
-    for iterUser = 1:nUsers
+    
+    
+    % Looping through the users who rated the track
+    for iterUser = MTidx{iterTrack}
         actualRating = M(iterUser,iterTrack);
         %for each track a user has rated, 
-        if (actualRating > 0)
-            userProfile = U(iterUser,:);
-    
-            idx = Uidx{iterUser};
-            % finding constant to rescale prediction by to account for
-            % missing features
-            renorm = sqrt(T(:,iterTrack)'*T(:,iterTrack))/sqrt(T(idx,iterTrack)'*T(idx,iterTrack));
-            
-            predictedRating = userProfile(idx)*T(idx,iterTrack)*renorm;
-            diff = actualRating - predictedRating;
-            %update theta
-            T(idx,iterTrack) = T(idx,iterTrack)...
-                                + gamma*(diff*userProfile(idx)' - lambda*T(idx,iterTrack));
-            idx = 0;
-        end
+        
+        userProfile = U(iterUser,:);
+
+        idx = Uidx{iterUser};
+        % finding constant to rescale prediction by to account for
+        % missing features
+        renorm = sqrt(T(:,iterTrack)'*T(:,iterTrack))/sqrt(T(idx,iterTrack)'*T(idx,iterTrack));
+        
+        % learning weights for track
+        predictedRating = userProfile(idx)*T(idx,iterTrack)*renorm;
+        diff = actualRating - predictedRating;
+        %update theta
+        T(idx,iterTrack) = T(idx,iterTrack)...
+                            + gamma*(diff*userProfile(idx)' - lambda*T(idx,iterTrack));
+                        
+        % learning latent features for users
+        predictedRating = user
+        idx = 0;
+        
     end
     iter =  iter + 1; 
-    end
+end
     
 end
 toc;

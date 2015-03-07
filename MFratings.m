@@ -11,7 +11,7 @@ mxU = max(Xtrain(:,3));
 mxT = max(Xtrain(:,2));
 
 % initializing Matrix
-M = zeros(mxU+1,mxT+1);
+M = -ones(mxU+1,mxT+1);
 
 for i = 1:m
     
