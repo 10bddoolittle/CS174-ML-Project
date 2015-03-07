@@ -44,13 +44,13 @@ for i = 1:l
             Xtest = Xtrain(test,:);
             Xt = Xtrain(train,:);
 
-            [T,U,Uidx] = MFtrain(M,U,lambda(i),gamma(k));
-            %[T,U] = MFtrain_latent(M,lambda(i),gamma(i),latent);
+            %[T,U,Uidx] = MFtrain(M,U,lambda(i),gamma(k));
+            [T,U] = MFtrain_latent(M,lambda(i),gamma(i),latent);
 
             size(T)
            
-            pred_y = MFpredict(T,Xtest,U,Uidx);
-            %pred_y = MFpredict_latent(T,Xtest,U);
+            %pred_y = MFpredict(T,Xtest,U,Uidx);
+            pred_y = MFpredict_latent(T,Xtest,U);
 
             correct_y = Xtrain(test,4);
 
