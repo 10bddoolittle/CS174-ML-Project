@@ -18,17 +18,19 @@ function newUserIdx = findLatentUser(newUserIdx,Tidx,userProfile,mode)
             userLatentProfile = userLatentProfile + U(i,:); 
         end
             userLatentProfile = userLatentProfile./(length(userLatentProfile);
+            %update label of the new user
+            U(newUserIdx) = userLatentProfile;
     end
     elseif strcmp(mode,'NearestNeighbor')
         %profile of new user
         newUser = userProfile(newUserIdx);
         %users who have rated the same track
-        neighbors = UserProfile(Tidx);
+        neighbors = userProfile(Tidx);
         %cross product between the user and neighbors 
         neighborDistance = neighbors*newUser';
         [~,idx] = min(neighborDistance);
         %update the label of the new user in U
-        U(newUser) = U(idx);
+        U(newUserIdx) = U(idx);
     end
 
         
