@@ -26,13 +26,15 @@ function newUserIdx = findLatentUser(newUserIdx,Tidx,userProfile,mode)
         newUser = userProfile(newUserIdx);
         %users who have rated the same track
         neighbors = userProfile(Tidx);
-        %cross product between the user and neighbors 
+        %elements in neighbors that is -1
+        invalidElements = find(neighbors == -1);
+        
+        validElements = setdiff()
+        %dot product between the user and neighbors 
         neighborDistance = neighbors*newUser';
         [~,idx] = min(neighborDistance);
+        latentUserIdx = Tidx{idx}; 
         %update the label of the new user in U
-        U(newUserIdx) = U(idx);
-    end
-
-        
-    
+        U(newUserIdx) = U(latentUserIdx);
+    end    
 end
