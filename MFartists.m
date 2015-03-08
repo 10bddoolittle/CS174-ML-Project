@@ -27,15 +27,15 @@ for iterArtist = 1:nArtists
     
    idx = find(AU(:,iterArtist,1) == -2);
    
-   AUidx{iterArtist} = setdiff(1:nArtists,idx);
+   AUidx{iterArtist} = setdiff(1:nUsers,idx);
     
     
 end
     
 for iterUser = 1:nUsers
     
-    idx = find(AU(iterUser,:,1) == -1);
-    UAidx{iterUser} = setdiff(1:nUsers,idx);
+    idx = find(AU(iterUser,:,1) == -2);
+    UAidx{iterUser} = setdiff(1:nArtists,idx);
 end
 
 

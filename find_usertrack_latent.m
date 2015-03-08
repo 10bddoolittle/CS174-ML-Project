@@ -1,4 +1,4 @@
-function [latentFeatures_User,latentFeatures_Track,count] = find_usertrack_latent(newUserIdx,newTrackIdx, U,T,Tidx,Aidx,AUidx,userProfile,wordProfile,mode,count)
+function [latentFeatures_User,latentFeatures_Track,count] = find_usertrack_latent(newUserIdx,aidx,newTrackIdx, U,T,Tidx,Aidx,AUidx,userProfile,wordProfile,mode,count)
 %INPUT
 % newUserIdx  :    index of the new user
 % newTrackIdx :    index of the new track
@@ -31,23 +31,44 @@ function [latentFeatures_User,latentFeatures_Track,count] = find_usertrack_laten
             
             %average latent feature of these tracks
             latentFeatures_Track = mean(artist_tracks,2);
-
-            %averge of users who have rated other tracks by same artist 
-            latentFeatures_User = mean(user_tracks);
+            if isempty(user_tracks_idx)
+                %vector containing users who have rated the same artist
+                neighbors_idx = AUidx; 
+                
+                User_set = U(neighbors_idx,:);
+                
+                hist_idx = find(sum(User_set == 0,2) < length(U(1,:)));
+                
+                latentFeatures_User = mean(U(hist_idx,:));
+            else
+                %averge of users who have rated other tracks by same artist     
+                latentFeatures_User = mean(user_tracks);
+            end
 
         elseif strcmp(mode, 'option2')
             %latent features from the most recently rated track
-            latentFeatures_Track = find_track_latent(Aidx, T, mode);
+            latentFeatures_Track = find_track_latent(Aidx, T, 'average');
             
             %vector containing users who have rated the same artist
             neighbors_idx = AUidx; 
             
-            user_wordProfile = wordProfile(newUserIdx,:);
+            User_set = U(neighbors_idx,:);
+
+            hist_idx = find(sum(User_set == 0,2) < length(U(1,:)));
             
-            neighbors = wordProfile(neighbor_idx,:);
-            correlated_neighbors = neighbors*user_wordProfile';
+            user_wordProfile = reshape(wordProfile(newUserIdx,aidx,:),[92,1]);
             
-            latent_user_idx = neighbor_idx(max(correlated_neighbors));
+            
+            for i = 1:length(hist_idx)
+                
+                
+                neighbors(i,:) = reshape(wordProfile(hist_idx(i),aidx,:),[1,92]);
+               
+            end
+            
+            correlated_neighbors = neighbors*user_wordProfile;
+            [~,I] = max(correlated_neighbors);
+            latent_user_idx = hist_idx(I);
             latentFeatures_User = U(latent_user_idx,:);
         end
     else
