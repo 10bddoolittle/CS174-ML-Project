@@ -1,4 +1,4 @@
-function [M,Uidx,Tidx, Aidx] = MFratings(Xtrain)
+function [M, Uidx,Tidx, Aidx] = MFratings(Xtrain)
 % Creates Base matrix of users and tracks
 
 % INPUTS:
