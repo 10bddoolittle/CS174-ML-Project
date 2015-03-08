@@ -12,7 +12,7 @@ function [AU, AUidx, UAidx] = MFartists(M,A,ArtistProf)
 [nUsers,nTracks] = size(M);
 [nArtists,~] = size(A);
 
-AU = -ones(nUsers,nArtists,n - 2);
+AU = -2*ones(nUsers,nArtists,n - 2);
 
 
 for i = 1:m
@@ -25,7 +25,7 @@ end
 
 for iterArtist = 1:nArtists
     
-   idx = find(AU(:,iterArtist,1) == -1);
+   idx = find(AU(:,iterArtist,1) == -2);
    
    AUidx{iterArtist} = setdiff(1:nArtists,idx);
     

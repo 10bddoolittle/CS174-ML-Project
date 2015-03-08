@@ -60,7 +60,7 @@ end
 for iterArtist = 1:nArtists
    Arow = A(iterArtist,:);
    
-   Aidx = find(Arow == 1);
+   Aidx{iterArtist} = find(Arow == 1);
 end
 
 end

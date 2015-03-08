@@ -10,12 +10,14 @@ function userLatentProfile = find_user_latent(newUserIdx,Tidx,U,UserProfile,mode
 %latentUserIdx : (latent) index of the user who is estimated as the best
 %representation for the new user. 
     if strcmp(mode,'Mean')    
-    userLatentProfile = 0;
-        for i = 1:length(Tidx)
-            %find the crossproduct of user
-            userLatentProfile = userLatentProfile + U(Tidx{i},:); 
-        end
-            userLatentProfile = userLatentProfile./(length(userLatentProfile);
+%        userLatentProfile = 0;
+%         for i = 1:length(Tidx)
+%             %find the crossproduct of user
+%             userLatentProfile = userLatentProfile + U(Tidx(i),:); 
+%         end
+%             userLatentProfile = userLatentProfile./(length(userLatentProfile));
+            
+        userLatentProfile = sum(U(Tidx,:))/length(Tidx);
 
     elseif strcmp(mode,'NearestNeighbor')
         %profile of new user

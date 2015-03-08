@@ -1,4 +1,4 @@
-function [latentFeatures_User,latentFeatures_Track] = find_usertrack_latent(newUserIdx,newTrackIdx, U,T,Tidx,Aidx,userProfile,wordProfile,mode)
+function [latentFeatures_User,latentFeatures_Track,count] = find_usertrack_latent(newUserIdx,newTrackIdx, U,T,Tidx,Aidx,AUidx,userProfile,wordProfile,mode,count)
 %INPUT
 % newUserIdx  :    index of the new user
 % newTrackIdx :    index of the new track
@@ -14,19 +14,19 @@ function [latentFeatures_User,latentFeatures_Track] = find_usertrack_latent(newU
 %OUTPUT
 % latentFeatures_User: the estimated latent features of the new user
 % latentFeatures_Track: estimated latent track for the new user 
-
+    
     %other tracks of the same artist
-    artist_tracks_idx = cell2mat(Aidx);
+    artist_tracks_idx = Aidx;
     artist_tracks = T(:,artist_tracks_idx);
     
     %other users who have rated the same track
-    user_tracks_idx = cell2mat(Tidx);
+    user_tracks_idx = Tidx;
     user_tracks = U(user_tracks_idx,:);
     
     [artistTracksRow, artistTracksCol] = size(artist_tracks_idx);
     [userTrackRow, userTrackCol] = size(user_tracks_idx);
     
-    if(~isEmpty(artist_tracks_idx))
+    if(~isempty(artist_tracks_idx))
         if strcmp(mode,'Mean')
             
             %average latent feature of these tracks
@@ -40,17 +40,24 @@ function [latentFeatures_User,latentFeatures_Track] = find_usertrack_latent(newU
             latentFeatures_Track = find_track_latent(Aidx, T, mode);
             
             %vector containing users who have rated the same artist
-            tempU = []; 
-            user_wordProfile = wordProfile(newUser,:);
+            neighbors_idx = AUidx; 
+            
+            user_wordProfile = wordProfile(newUserIdx,:);
             
             neighbors = wordProfile(neighbor_idx,:);
             correlated_neighbors = neighbors*user_wordProfile';
             
-            latent_user_idx = neighbor_idx(min(correlated_neighbors));
-            latentFeatures_User = U(latent_user_idx);
+            latent_user_idx = neighbor_idx(max(correlated_neighbors));
+            latentFeatures_User = U(latent_user_idx,:);
         end
     else
-        fprint('No other tracks by this artist have been rated yet.');
+        count = count + 1;
+        [m,n] = size(U(1,:));
+        latentFeatures_User = zeros(1,n);
+        latentFeatures_Track = zeros(n,1);
+        latentFeatures_User(1,1) = 30;
+        latentFeatures_Track(1,1) = 1;
+        
     end
 
 
