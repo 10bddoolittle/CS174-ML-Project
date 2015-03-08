@@ -21,16 +21,16 @@ function userLatentProfile = find_user_latent(newUserIdx,Tidx,U,UserProfile,mode
 
     elseif strcmp(mode,'NearestNeighbor')
         %profile of new user
-        newUser = UserProfile(newUserIdx);
+        newUser = UserProfile(newUserIdx,:);
         %users who have rated the same track
         neighbors = UserProfile(Tidx,:);
        
         %dot product between the user and neighbors 
         neighborDistance = neighbors*newUser';
-        [~,idx] = min(neighborDistance);
+        [~,idx] = max(neighborDistance);
         %index of the user's selected latent feature
-        latentUserIdx = Tidx{idx};
+        latentUserIdx = Tidx(idx);
         %pass the output parameter
-        userLatentProfile = U(latentUserIdx);
+        userLatentProfile = U(latentUserIdx,:);
     end     
 end     

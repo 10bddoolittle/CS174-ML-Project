@@ -1,4 +1,4 @@
-function [pred_y, err,err2,Unan,Tnan,Rnan,count,Tempty,userlatent] = MFpredict(T,Xtest,U,Markidx,Tidx,Aidx,AUidx,UserProf,WordProf)
+function [pred_y, err,err2,count,Tempty,userlatent] = MFpredict(T,Xtest,U,Markidx,Tidx,Aidx,AUidx,UserProf,WordProf)
 % predicts rating for new set of users
 
 % INPUT 
@@ -17,6 +17,7 @@ predU = Xtest(:,3);
 predT = Xtest(:,2);
 predA = Xtest(:,1);
 
+
 k = 1;
 l = 1;
 err = 0;
@@ -26,6 +27,9 @@ count = 0;
 userlatent = 0;
 % for each example in Xtest
 for i = 1:m
+    
+    i
+    m
     uidx = predU(i)+1;
     tidx = predT(i)+1;
     aidx = predA(i)+1;
@@ -36,7 +40,7 @@ for i = 1:m
         if T(:,tidx)'*T(:,tidx) == 0
             %reference
             %find_usertrack_latent(newUserIdx,newTrackIdx, U,T,Tidx,Aidx,userProfile,wordProfile,mode)
-            [Ul,Tl,count] = find_usertrack_latent(uidx,tidx,U,T,Tidx{tidx},Aidx{aidx},AUidx{aidx},UserProf,WordProf,'Mean',count);
+            [Ul,Tl,count] = find_usertrack_latent(uidx,aidx,tidx,U,T,Tidx{tidx},Aidx{aidx},AUidx{aidx},UserProf,WordProf,'option2',count);
             if isnan(Ul)
                 userlatent = userlatent + 1;
             end
@@ -45,7 +49,8 @@ for i = 1:m
                 Tempty = Tempty +1;
                 
             else
-                Ul = find_user_latent(uidx,Tidx{tidx},U,UserProf,'Mean');
+                Ul = find_user_latent(uidx,Tidx{tidx},U,UserProf,'NearestNeighbor');
+                
 
             end
             Tl = T(:,tidx);
@@ -83,9 +88,6 @@ for i = 1:m
                 pred_y(i) = 30;
                 err(k) = i;
                 k = k+1;
-                Unan = Ul;
-                Tnan = Tl;
-                Rnan = renorm;
             end
         end
     end
