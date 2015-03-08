@@ -16,17 +16,13 @@ function userLatentProfile = find_user_latent(newUserIdx,Tidx,U,UserProfile,mode
             userLatentProfile = userLatentProfile + U(Tidx{i},:); 
         end
             userLatentProfile = userLatentProfile./(length(userLatentProfile);
-            %update label of the new user
-            U(newUserIdx) = userLatentProfile;
-            
+
     elseif strcmp(mode,'NearestNeighbor')
         %profile of new user
         newUser = UserProfile(newUserIdx);
         %users who have rated the same track
         neighbors = UserProfile(Tidx,:);
-        %elements in neighbors that is -1
-        invalidElements = find(neighbors == -1);
-        neighbors(invalidElements) = 0;
+       
         %dot product between the user and neighbors 
         neighborDistance = neighbors*newUser';
         [~,idx] = min(neighborDistance);

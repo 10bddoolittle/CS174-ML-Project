@@ -16,8 +16,7 @@ function userLatentProfile = find_user_latent(newUserIdx,Tidx,U,UserProfile,mode
             userLatentProfile = userLatentProfile + U(Tidx{i},:); 
         end
             userLatentProfile = userLatentProfile./(length(userLatentProfile);
-            %update label of the new user
-            U(newUserIdx) = userLatentProfile;
+
             
     elseif strcmp(mode,'NearestNeighbor')
         %profile of new user

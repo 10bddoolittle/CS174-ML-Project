@@ -1,42 +1,38 @@
-function newUserIdx = findLatentUser(newUserIdx,Tidx,userProfile,mode)
+function userLatentProfile = findLatentUser(newUserIdx,Tidx,U,UserProfile,mode)
 %INPUT
-% newUser    index of the new user
-% Tidx{i}    cell contains the indices of users who have rated track {i}
-% U[m x n]   user latent feature or profile
-% mode       string, mean, median or some other statistical parameter
-% state      binary value, on = 
+% newUserIdx  :    index of the new user
+% Tidx{i}     :    cell contains the indices of users who have rated track {i}
+% userProfile :    matrix containing the profiles of all the users
+% mode        :    string, 'Mean' or 'NearestNeighbor' 
+
 
 %OUTPUT
-%userLatentProfile: estimated latent profile for the new user based on the
-%profile of the nearest neighbor who has rated the same track. 
-    
-    if strcmp(mode,'mean')    
+%latentUserIdx : (latent) index of the user who is estimated as the best
+%representation for the new user. 
+    if strcmp(mode,'Mean')    
     userLatentProfile = 0;
         for i = 1:length(Tidx)
             %find the crossproduct of user
-            
-            userLatentProfile = userLatentProfile + U(i,:); 
+            userLatentProfile = userLatentProfile + U(Tidx{i},:); 
         end
             userLatentProfile = userLatentProfile./(length(userLatentProfile);
             %update label of the new user
             U(newUserIdx) = userLatentProfile;
-    end
+            
     elseif strcmp(mode,'NearestNeighbor')
         %profile of new user
-        newUser = userProfile(newUserIdx);
+        newUser = UserProfile(newUserIdx);
         %users who have rated the same track
-        neighbors = userProfile(Tidx);
-        [neighborsRow,neighborsCol] = size(neighbors);
-        
+        neighbors = UserProfile(Tidx,:);
         %elements in neighbors that is -1
         invalidElements = find(neighbors == -1);
         neighbors(invalidElements) = 0;
         %dot product between the user and neighbors 
         neighborDistance = neighbors*newUser';
         [~,idx] = min(neighborDistance);
-        %index of the user 
-        latentUserIdx = Tidx{idx}; 
-        %update the label of the new user in U
-        U(newUserIdx) = U(latentUserIdx);
-    end    
-end
+        %index of the user's selected latent feature
+        latentUserIdx = Tidx{idx};
+        %pass the output parameter
+        userLatentProfile = U(latentUserIdx);
+    end     
+end     
