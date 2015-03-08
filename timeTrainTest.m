@@ -1,4 +1,4 @@
-function [error,pred_y,correct_y,T,U,Uidx] = timeTrainTest()
+function [error,pred_y,correct_y,T,U,train,test] = timeTrainTest()
 data_train = load('data_train.mat');
 data_users = load('data_users.mat');
 
@@ -22,7 +22,7 @@ maxUser = max(Xtrain(:,3));
 
 % creating M matrix with Xtrain filled in and dimensions MaxUser+1 x
 % MaxTrack+1
-M = MFratings(train,maxArtist,maxTrack,maxUser);
+[M,Aidx,Tidx,Uidx] = MFratings(train,maxArtist,maxTrack,maxUser);
 %function [T,U] = MFtrain_latent(M,lambda,gamma,latent)
 %function pred_y = MFpredict_latent(T,Xtest,U)
 
@@ -30,12 +30,12 @@ M = MFratings(train,maxArtist,maxTrack,maxUser);
 UserProf = MFusers(M,user_profile);
 
 %train the model on ratings for first 12 months
-%[T,U] = MFtrain_latent(M,0.001,0.001,50);
+%[T,U] = MFtrain_latent(M,0.01,0.01,150);
 [T,U,Uidx] = MFtrain(M,UserProf,.01,.01);
 
 
 %predict the ratings for the next 12 months
-%predY = MFpredict_latent(T,Xtrain(idx_T2,:),U);
+%pred_y = MFpredict_latent(T,test,U,Aidx);
 pred_y = MFpredict(T,test,U,Uidx);
 
 correct_y = test(:,4);

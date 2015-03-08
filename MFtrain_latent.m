@@ -23,8 +23,8 @@ T = zeros(latent,nTracks);
 
 
 
-thetaInit = rand(latent,1);
-%thetaInit = ones(latent,1);
+%thetaInit = rand(latent,1);
+thetaInit = ones(latent,1);
 
 Ttrainidx = [];
 Utrainidx = [];
@@ -87,13 +87,13 @@ for iterTrack = Ttrainidx
         
         %update T
         T(:,iterTrack) = T(:,iterTrack)...
-                            + gamma*(diff*userProfile' - lambda*T(:,iterTrack));
+                            + gamma*(diff*userProfile') - lambda*T(:,iterTrack);
                         
         % learning latent features for users
         predictedRating = userProfile*T(:,iterTrack);
         diff = actualRating - predictedRating;
         
-        U(iterUser,:) = userProfile+gamma*(diff*T(:,iterTrack)' - lambda*userProfile);
+        U(iterUser,:) = userProfile+gamma*(diff*T(:,iterTrack)') - lambda*userProfile;
         idx = 0;
         
     end

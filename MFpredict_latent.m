@@ -1,4 +1,4 @@
-function pred_y = MFpredict_latent(T,Xtest,U)
+function pred_y = MFpredict_latent(T,Xtest,U,Aidx)
 % predicts rating for new set of users
 
 % INPUT 
@@ -9,6 +9,7 @@ function pred_y = MFpredict_latent(T,Xtest,U)
 % pred_y    predicted track rating of user
 
 [m,n] = size(Xtest);
+[nFeatures,~] = size(T);
 
 pred_y = zeros(m,1);
 
@@ -21,9 +22,16 @@ for i = 1:m
     uidx = predU(i)+1;
     tidx = predT(i)+1;
     
-
-
-    pred_y(i) = U(uidx,:)*T(:,tidx);
+    if sum(T(:,tidx)) == 0
+        if isempty(Aidx{tidx}) 
+            Tl = .5*ones(1:nFeatures,1);
+        else
+        Tl = find_track_latent(Aidx{tidx},T,'average');
+        end
+    else
+        Tl = T(:,tidx);
+    end
+    pred_y(i) = U(uidx,:)*Tl;
     
     if pred_y(i) < 0
         pred_y(i) = 0;

@@ -1,4 +1,4 @@
-function [M, Uidx,Tidx, Aidx] = MFratings(Xtrain, maxArtist, maxTrack, maxUser)
+function [M, Uidx,Tidx, Aidx, A] = MFratings(Xtrain, maxArtist, maxTrack, maxUser)
 % Creates Base matrix of users and tracks
 
 % INPUTS:
@@ -9,6 +9,9 @@ function [M, Uidx,Tidx, Aidx] = MFratings(Xtrain, maxArtist, maxTrack, maxUser)
 % Uidx{i}    cell contains the track indices rated by user {i} 
 % Tidx{i}    cell contains the indices of users who have rated track {i}
 % Aidx{i}    cell contains the indices of tracks composed by artist {i}
+% A          Artist track matrix used to determine which tracks were by a
+%            given artist
+
 
 [m,~] = size(Xtrain);
 mxU = maxUser;
