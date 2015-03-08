@@ -19,8 +19,8 @@ tic;
 
 
 
-T = ones(nFeatures ,nTracks);
-U = UserProf;
+T = zeros(nFeatures ,nTracks);
+U = zeros(nUsers, nFeatures);
 
 
 

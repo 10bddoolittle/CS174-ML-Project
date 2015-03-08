@@ -1,4 +1,4 @@
-function [error,lambda,gamma,pred_y,correct_y] = MFcross_validation(Xtrain,data_users,N,lambda,gamma,latent)
+function [error,lambda,gamma,pred_y,correct_y] = MFcross_validation(Xtrain,data_users,N,lambda,gamma)
 
 % INPUTS
 % Xtrain       training data of user ratings
@@ -8,14 +8,17 @@ function [error,lambda,gamma,pred_y,correct_y] = MFcross_validation(Xtrain,data_
 % OUTPUT     
 % error     RMS error
 
-M = MFratings(Xtrain);
-U = MFusers(M,data_users);
+
 l = length(lambda);
 g = length(gamma);
 
 itmax = l*g
 
 [m,n] = size(Xtrain);
+
+maxArtist = max(Xtrain(:,1));
+maxTrack = max(Xtrain(:,2));
+maxUser = max(Xtrain(:,3));
 
 % creating a vector of indices of X
 idxperm = 1:m;
@@ -43,14 +46,19 @@ for i = 1:l
 
             Xtest = Xtrain(test,:);
             Xt = Xtrain(train,:);
+            
+           
+            
+            M = MFratings(Xtrain, maxArtist,maxTrack,maxUser);
+            U = MFusers(M,data_users.data_users);
 
-            %[T,U,Uidx] = MFtrain(M,U,lambda(i),gamma(k));
-            [T,U] = MFtrain_latent(M,lambda(i),gamma(i),latent);
+            [T,U,Uidx] = MFtrain(M,U,lambda(i),gamma(k));
+            %[T,U] = MFtrain_latent(M,lambda(i),gamma(i),latent);
 
             size(T)
            
-            %pred_y = MFpredict(T,Xtest,U,Uidx);
-            pred_y = MFpredict_latent(T,Xtest,U);
+            pred_y = MFpredict(T,Xtest,U,Uidx);
+            %pred_y = MFpredict_latent(T,Xtest,U);
 
             correct_y = Xtrain(test,4);
 
