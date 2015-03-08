@@ -31,8 +31,14 @@ function [latentFeatures_User,latentFeatures_Track,count] = find_usertrack_laten
             
             %average latent feature of these tracks
             latentFeatures_Track = mean(artist_tracks,2);
-
-            %averge of users who have rated other tracks by same artist 
+            if isempty(user_track_idx)
+                %vector containing users who have rated the same artist
+                neighbors_idx = AUidx; 
+                
+                U(neighbors_idx
+                    
+                
+            %averge of users who have rated other tracks by same artist     
             latentFeatures_User = mean(user_tracks);
 
         elseif strcmp(mode, 'option2')

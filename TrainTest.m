@@ -1,4 +1,4 @@
-function [error,pred_y,correct_y,T,U,train,test,err,err2,Unan,Tnan,Rnan,count,Tempty] = TrainTest()
+function [error,pred_y,correct_y,T,U,train,test,err,err2,Unan,Tnan,Rnan,count,Tempty,userlatent] = TrainTest()
 data_train = load('data_train.mat');
 % data_users = load('data_users.mat');
 % data_words = load('data_words.mat');
@@ -64,7 +64,7 @@ fprintf('loaded files')
 
 %predict the ratings for the next 12 months
 %pred_y = MFpredict_latent(T,test,U,Aidx);
-[pred_y, err,err2,Unan,Tnan,Rnan,count,Tempty] = MFpredict(T,test,U,Markidx,Tidx,Aidx,AUidx,UserProf,WordProf);
+[pred_y, err,err2,Unan,Tnan,Rnan,count,Tempty,userlatent] = MFpredict(T,test,U,Markidx,Tidx,Aidx,AUidx,UserProf,WordProf);
 
 correct_y = test(:,4);
 error = rmse(pred_y,correct_y);

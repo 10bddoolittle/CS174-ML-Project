@@ -1,4 +1,4 @@
-function [pred_y, err,err2,Unan,Tnan,Rnan,count,Tempty] = MFpredict(T,Xtest,U,Markidx,Tidx,Aidx,AUidx,UserProf,WordProf)
+function [pred_y, err,err2,Unan,Tnan,Rnan,count,Tempty,userlatent] = MFpredict(T,Xtest,U,Markidx,Tidx,Aidx,AUidx,UserProf,WordProf)
 % predicts rating for new set of users
 
 % INPUT 
@@ -23,6 +23,7 @@ err = 0;
 err2 = 0;
 Tempty = 0;
 count = 0;
+userlatent = 0;
 % for each example in Xtest
 for i = 1:m
     uidx = predU(i)+1;
@@ -36,12 +37,16 @@ for i = 1:m
             %reference
             %find_usertrack_latent(newUserIdx,newTrackIdx, U,T,Tidx,Aidx,userProfile,wordProfile,mode)
             [Ul,Tl,count] = find_usertrack_latent(uidx,tidx,U,T,Tidx{tidx},Aidx{aidx},AUidx{aidx},UserProf,WordProf,'Mean',count);
+            if isnan(Ul)
+                userlatent = userlatent + 1;
+            end
         else
             if isempty(Tidx{tidx})
                 Tempty = Tempty +1;
                 
             else
                 Ul = find_user_latent(uidx,Tidx{tidx},U,UserProf,'Mean');
+
             end
             Tl = T(:,tidx);
         end
