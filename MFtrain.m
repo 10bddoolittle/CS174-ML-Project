@@ -74,7 +74,7 @@ end
 iter = 0;
 
 %gradient descent implementation
-while (iter < 10)
+while (iter < 20)
 tic;
 % looping through the rated tracks
 for iterTrack = Ttrainidx

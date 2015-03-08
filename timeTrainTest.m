@@ -31,7 +31,7 @@ UserProf = MFusers(M,user_profile);
 
 %train the model on ratings for first 12 months
 %[T,U] = MFtrain_latent(M,0.001,0.001,50);
-[T,U,Uidx] = MFtrain(M,UserProf,.001,.001);
+[T,U,Uidx] = MFtrain(M,UserProf,.01,.01);
 
 
 
