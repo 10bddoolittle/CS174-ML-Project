@@ -1,9 +1,9 @@
-function U = MFusers(M,data_users)
+function UserProf = MFusers(M,data_users)
 
 num_user = size(M,1);
 [m,n] = size(data_users);
 
-U = zeros(num_user,n-1);
+UserProf = zeros(num_user,n-1);
 
 
 
@@ -11,19 +11,19 @@ U = zeros(num_user,n-1);
 for i = 1:m
    uidx = data_users(i,1) + 1;
    
-   U(uidx,:) = data_users(i,2:n);
+   UserProf(uidx,:) = data_users(i,2:n);
     
 end
 
 % finding users who did not fill in survey and giving them average
-coldidx = find(sum(abs(U),2) == 0);
+coldidx = find(sum(abs(UserProf),2) == 0);
 
-avgU = sum(abs(U))/m;
+avgU = sum(abs(UserProf))/m;
 
 
 
 for i = coldidx'
-    U(i,:) = avgU;
+    UserProf(i,:) = avgU;
     
 end
 

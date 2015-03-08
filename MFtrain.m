@@ -1,4 +1,4 @@
-function [T,U,Uidx] = MFtrain(M,U,lambda,gamma)
+function [T,U,Uidx] = MFtrain(M,UserProf,lambda,gamma)
 % learns weights for each track
 
 % Input
@@ -12,14 +12,15 @@ tic;
 %gamma = 0.001;
 
 [nUsers,nTracks] = size(M); 
-[~,nFeatures] = size(U);
+[~,nFeatures] = size(UserProf);
 %initialize theta randomly
 
 %assign the initialized theta
 
 
 
-T = zeros(nFeatures ,nTracks);
+T = ones(nFeatures ,nTracks);
+U = UserProf;
 
 
 
@@ -31,7 +32,7 @@ Utrainidx = [];
 
 % taking care of missing data (-1's)
 for iterUser = 1:nUsers
-    userProfile = U(iterUser,:);
+    userProfile = UserProf(iterUser,:);
     
     % finding -1's
     markidx = find(userProfile == -1);
@@ -85,7 +86,7 @@ for iterTrack = Ttrainidx
         actualRating = M(iterUser,iterTrack);
         %for each track a user has rated, 
         
-        userProfile = U(iterUser,:);
+        userProfile = UserProf(iterUser,:);
 
         idx = Uidx{iterUser};
         % finding constant to rescale prediction by to account for
