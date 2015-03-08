@@ -34,13 +34,11 @@ UserProf = MFusers(M,user_profile);
 [T,U,Uidx] = MFtrain(M,UserProf,.01,.01);
 
 
-
 %predict the ratings for the next 12 months
 %predY = MFpredict_latent(T,Xtrain(idx_T2,:),U);
 pred_y = MFpredict(T,test,U,Uidx);
 
 correct_y = test(:,4);
-
 error = rmse(pred_y,correct_y);
 end
 
