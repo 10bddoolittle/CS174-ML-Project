@@ -1,4 +1,4 @@
-function [T,U,Uidx] = MFtrain(M,UserProf,lambda,gamma)
+function [T,U,Uidx] = MFtrain(M,UserProf,lambda1,lambda2,gamma)
 % learns weights for each track
 
 % Input
@@ -98,13 +98,13 @@ for iterTrack = Ttrainidx
         diff = actualRating - predictedRating;
         %update T
         T(idx,iterTrack) = T(idx,iterTrack)...
-                            + gamma*(diff*userProfile(idx)' - lambda*T(idx,iterTrack));
+                            + gamma*(diff*userProfile(idx)' - lambda1*T(idx,iterTrack));
                         
         % learning latent features for users
         predictedRating = userProfile(idx)*T(idx,iterTrack)*renorm;
         diff = actualRating - predictedRating;
         
-        U(iterUser,idx) = userProfile(idx)+gamma*(diff*T(idx,iterTrack)' - lambda*userProfile(idx));
+        U(iterUser,idx) = userProfile(idx)+gamma*(diff*T(idx,iterTrack)' - lambda2*userProfile(idx));
         idx = 0;
         
     end

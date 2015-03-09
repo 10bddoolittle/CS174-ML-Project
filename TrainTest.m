@@ -1,4 +1,4 @@
-function [error,pred_y,correct_y,T,U,train,test,err,err2,count,Tempty,userlatent] = TrainTest()
+function [error,pred_y,correct_y,T,U,train,test,Uerr,Terr] = TrainTest(lambda1,lambda2,gamma)
 data_train = load('data_train.mat');
 % data_users = load('data_users.mat');
 % data_words = load('data_words.mat');
@@ -58,13 +58,13 @@ AUidx = AUidx.AUidx;
 
 fprintf('loaded files')
 
-[T,U,Markidx] = MFtrain(M,UserProf,.01,.01);
+[T,U,Markidx] = MFtrain(M,UserProf,lambda1,lambda2,gamma);
 
 
 
 %predict the ratings for the next 12 months
 %pred_y = MFpredict_latent(T,test,U,Aidx);
-[pred_y, err,err2,count,Tempty,userlatent] = MFpredict(T,test,U,Markidx,Tidx,Aidx,AUidx,UserProf,WordProf);
+[pred_y, Uerr,Terr] = MFpredict(T,test,U,Markidx,Tidx,Aidx,AUidx,UserProf,WordProf);
 
 correct_y = test(:,4);
 error = rmse(pred_y,correct_y);

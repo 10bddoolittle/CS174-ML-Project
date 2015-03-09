@@ -35,7 +35,7 @@ function latentFeatures_track = coldStartTrack(WordProf, AUidx,Aidx, T)
                 end
             end
             
-            %find the most similar artist
+            %find the most similar artist 
             similar_Artist_Idx = max(artist_neighbor * artist_profile');
             
             %find the average latent feature of a track by the artist
