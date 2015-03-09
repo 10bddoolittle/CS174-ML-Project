@@ -22,7 +22,7 @@ function latentFeatures_track = coldStartTrack(WordProf, AUidx,Aidx, T)
                 %if there is a track by artist(i) that has been rated
                 if (~ isempty(Aidx{i}))
                      %find users who have rated this artist
-                     users_rated_artistI = AUidx{i};
+                     users_rated_artistI = Aidx{i};
                      
                      %description of this artist by users who have rated 
                      temp_artists_profile = WordProf(users_rated_artistI,i,13:94);
@@ -38,7 +38,7 @@ function latentFeatures_track = coldStartTrack(WordProf, AUidx,Aidx, T)
             %find the most similar artist
             similar_Artist_Idx = max(artist_neighbor * artist_profile');
             
-            %find the average latent feature of the a track by the artist
+            %find the average latent feature of a track by the artist
             tracks_by_artist = Aidx{similar_Artist_Idx};
             latentFeatures_track = mean(T(:,tracks_by_artist),2); 
             

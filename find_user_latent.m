@@ -24,7 +24,6 @@ function userLatentProfile = find_user_latent(newUserIdx,Tidx,U,UserProfile,mode
         newUser = UserProfile(newUserIdx,:);
         %users who have rated the same track
         neighbors = UserProfile(Tidx,:);
-       
         %dot product between the user and neighbors 
         neighborDistance = neighbors*newUser';
         [~,idx] = max(neighborDistance);
