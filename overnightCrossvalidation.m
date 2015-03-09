@@ -45,7 +45,7 @@ function error = overnightCrossvalidation(lambda1,lambda2,gamma,niter)
             error(iterLambda1,iterLambda2,iterGamma) = rmse(pred_y,correct_y);
             
             %save after each iteration
-            save('overnightCrossvalidation',error);
+            save('overnightCrossvalidation','error');
             
             end
         end
