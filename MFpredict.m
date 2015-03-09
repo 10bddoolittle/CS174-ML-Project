@@ -1,4 +1,4 @@
-function [pred_y, err,err2,count,Tempty,userlatent] = MFpredict(T,Xtest,U,Markidx,Tidx,Aidx,AUidx,UserProf,WordProf)
+function [pred_y,Uerr,Terr] = MFpredict(T,Xtest,U,Markidx,Tidx,Aidx,AUidx,UserProf,WordProf)
 % predicts rating for new set of users
 
 % INPUT 
@@ -17,14 +17,15 @@ predU = Xtest(:,3);
 predT = Xtest(:,2);
 predA = Xtest(:,1);
 
+[nUser,nFeatures] = size(U);
+[~,nTracks] = size(T);
 
-k = 1;
-l = 1;
-err = 0;
-err2 = 0;
-Tempty = 0;
+Uerr = -2*ones(nUser,nFeatures);
+Terr = -2*ones(nFeatures,nTracks);
+
+
 count = 0;
-userlatent = 0;
+
 % for each example in Xtest
 for i = 1:m
     
@@ -40,26 +41,15 @@ for i = 1:m
         if T(:,tidx)'*T(:,tidx) == 0
             %reference
             %find_usertrack_latent(newUserIdx,newTrackIdx, U,T,Tidx,Aidx,userProfile,wordProfile,mode)
-            [Ul,Tl,count] = find_usertrack_latent(uidx,aidx,tidx,U,T,Tidx{tidx},Aidx{aidx},AUidx{aidx},UserProf,WordProf,'option2',count);
-            if isnan(Ul)
-                userlatent = userlatent + 1;
-            end
+            [Ul,Tl,count] = find_usertrack_latent(uidx,aidx,tidx,U,T,Tidx{tidx},Aidx{aidx},AUidx{aidx},UserProf,WordProf,'Mean',count);          
         else
-            if isempty(Tidx{tidx})
-                Tempty = Tempty +1;
-                
-            else
-                Ul = find_user_latent(uidx,Tidx{tidx},U,UserProf,'NearestNeighbor');
-                
 
-            end
+            Ul = find_user_latent(uidx,Tidx{tidx},U,UserProf,'Mean');                
             Tl = T(:,tidx);
         end
     
     else   
         if T(:,tidx)'*T(:,tidx) == 0
-            err2(l) = i;
-            l = l+1;
             Tl = find_track_latent(Aidx{aidx},T,'average');
             Ul = U(uidx,:);
         else
@@ -70,32 +60,24 @@ for i = 1:m
     
     % finding constant to rescale prediction by to account for
     % missing features
-    if Tl'*Tl == 0
-        
-        
-    else
-        renorm = sqrt(Tl'*Tl)/sqrt(Tl(idx)'*Tl(idx));
-        if isnan(renorm)
-            err(k) = i;
-            k = k +1;
-            pred_y(i) = 30;
-            
-        else
-        
-            pred_y(i) = Ul*Tl*renorm;
-            
-            if isnan(pred_y(i))
-                pred_y(i) = 30;
-                err(k) = i;
-                k = k+1;
-            end
-        end
-    end
+
+    renorm = sqrt(Tl'*Tl)/sqrt(Tl(idx)'*Tl(idx));
+
+    pred_y(i) = Ul*Tl*renorm;
+
+    Uerr(i,:) = Ul;
+    Terr(:,i) = Tl;
+       
     
     if pred_y(i) < 0
         pred_y(i) = 0;
     elseif pred_y(i) > 100
         pred_y(i) = 100;
+    else
+       class = [10,30,50,70,90];
+       [mi,idx] = min(abs(class - pred_y(i)));
+       
+       pred_y(i) = pred_y(i) + .5*(class(idx)-pred_y(i));
     end
     
 end
