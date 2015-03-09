@@ -1,21 +1,19 @@
-function [error,pred_y,correct_y,T,U,train,test,Uerr,Terr] = TrainTest(lambda1,lambda2,gamma)
-data_train = load('data_train.mat');
+function [error,pred_y,correct_y,T,U,train,test] = TrainTest(lambda1,lambda2,gamma,niter)
+
 % data_users = load('data_users.mat');
 % data_words = load('data_words.mat');
 % 
 % 
-Xtrain = data_train.train;
+
 % user_profile = data_users.data_users;
 % words_profile = data_words.data_words;
 % 
 % %ratings in time period 1-6
-idx_T1 = find(Xtrain(:,5)<= 20);
-idx_T2 = find(Xtrain(:,5) > 20);
+
 % %idx_T3 = find(Xtrain(:,5) < 18);
 % %idx_T4 = find(Xtrain(:,5) < 24);
 % 
-train = Xtrain(idx_T1,:);
-test = Xtrain(idx_T2,:);
+
 % 
 % % finding maximum values of Xtrain
 % maxArtist = max(Xtrain(:,1));
@@ -45,6 +43,8 @@ M = load('M.mat');
 Aidx = load('Aidx.mat');
 Tidx = load('Tidx.mat');
 AUidx = load('AUidx.mat');
+train = load('train.mat');
+test = load('test.mat');
 
 WordProf = WordProf.WordProf;
 UserProf = UserProf.UserProf;
@@ -52,19 +52,20 @@ M = M.M;
 Aidx = Aidx.Aidx;
 Tidx = Tidx.Tidx;
 AUidx = AUidx.AUidx;
-
+test = test.test;
+train = train.train;
 
 
 
 fprintf('loaded files')
 
-[T,U,Markidx] = MFtrain(M,UserProf,lambda1,lambda2,gamma);
+[T,U,Markidx] = MFtrain(M,UserProf,lambda1,lambda2,gamma,niter);
 
 
 
 %predict the ratings for the next 12 months
 %pred_y = MFpredict_latent(T,test,U,Aidx);
-[pred_y, Uerr,Terr] = MFpredict(T,test,U,Markidx,Tidx,Aidx,AUidx,UserProf,WordProf);
+[pred_y] = MFpredict(T,test,U,Markidx,Tidx,Aidx,AUidx,UserProf,WordProf);
 
 correct_y = test(:,4);
 error = rmse(pred_y,correct_y);

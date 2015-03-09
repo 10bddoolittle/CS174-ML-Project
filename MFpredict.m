@@ -1,4 +1,4 @@
-function [pred_y,Uerr,Terr] = MFpredict(T,Xtest,U,Markidx,Tidx,Aidx,AUidx,UserProf,WordProf)
+function [pred_y] = MFpredict(T,Xtest,U,Markidx,Tidx,Aidx,AUidx,UserProf,WordProf)
 % predicts rating for new set of users
 
 % INPUT 
@@ -20,8 +20,7 @@ predA = Xtest(:,1);
 [nUser,nFeatures] = size(U);
 [~,nTracks] = size(T);
 
-Uerr = -2*ones(nUser,nFeatures);
-Terr = -2*ones(nFeatures,nTracks);
+
 
 
 count = 0;
@@ -64,20 +63,14 @@ for i = 1:m
     renorm = sqrt(Tl'*Tl)/sqrt(Tl(idx)'*Tl(idx));
 
     pred_y(i) = Ul*Tl*renorm;
-
-    Uerr(i,:) = Ul;
-    Terr(:,i) = Tl;
+ 
        
     
     if pred_y(i) < 0
         pred_y(i) = 0;
     elseif pred_y(i) > 100
         pred_y(i) = 100;
-    else
-       class = [10,30,50,70,90];
-       [mi,idx] = min(abs(class - pred_y(i)));
-       
-       pred_y(i) = pred_y(i) + .5*(class(idx)-pred_y(i));
+
     end
     
 end

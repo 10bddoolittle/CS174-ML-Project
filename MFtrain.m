@@ -1,4 +1,4 @@
-function [T,U,Uidx] = MFtrain(M,UserProf,lambda1,lambda2,gamma)
+function [T,U,Uidx] = MFtrain(M,UserProf,lambda1,lambda2,gamma,niter)
 % learns weights for each track
 
 % Input
@@ -74,7 +74,7 @@ end
 iter = 0;
 
 %gradient descent implementation
-while (iter < 5)
+while (iter < niter)
 tic;
 % looping through the rated tracks
 for iterTrack = Ttrainidx
