@@ -1,22 +1,23 @@
 function [T,U] = MFtrain(M,UserProf,lambda1,lambda2,gamma,niter)
-% learns weights for each track
+% uses matrix factorization to learn weights for users and tracks
 
 % Input
 %M  : [m x n] m users, n tracks
 %U  : [m x k] m users, k features
 
 % Output
-%theta :[1 x k]
+%T :[k x n]
+
 tic;
-%lambda = 0.001;
-%gamma = 0.001;
+
 
 [nUsers,nTracks] = size(M); 
 [~,nFeatures] = size(UserProf);
-%initialize theta randomly
 
-%assign the initialized theta
 
+
+
+%nFeatures = 5;
 %idx = [74:91];
 %nFeatures = length(idx);
 
@@ -24,24 +25,18 @@ T = zeros(nFeatures ,nTracks);
 U = zeros(nUsers, nFeatures);
 
 
-
+% initial conditions for U and T
 %thetaInit = rand(nFeatures,1);
 thetaInit = ones(nFeatures,1);
+Uinit = ones(1,nFeatures);
 
 Ttrainidx = [];
 Utrainidx = [];
 
-% taking care of missing data (-1's)
+
 for iterUser = 1:nUsers
-    %userProfile = UserProf(iterUser,:);
-    
-    % finding -1's
-    %markidx = find(userProfile == -1);
-    
-    % store indexes of -1's in cell Uidx
-    %Uidx{iterUser} =  setdiff([1:nFeatures],markidx);
-    
-    
+     
+    % already have this information, get from MFratings
     Mrow = M(iterUser,:);
     
     markidx = find(Mrow == -1);
@@ -59,6 +54,8 @@ for iterUser = 1:nUsers
 end
 
 for iterTrack = 1:nTracks
+    
+    %Already have this information, get it from MFratings
     Mcol = M(:,iterTrack);
     
     markidx = find(Mcol == -1);
@@ -78,39 +75,43 @@ iter = 0;
 while (iter < niter)
 tic;
 % looping through the rated tracks
-for iterTrack = Ttrainidx
-    T(:,iterTrack) = thetaInit;
-    
-    
-    % Looping through the users who rated the track
-    for iterUser = MTidx{iterTrack}
-        actualRating = M(iterUser,iterTrack);
-        %for each track a user has rated, 
+%for j = 1:nFeatures
+    for iterTrack = Ttrainidx
         
-        userProfile = UserProf(iterUser,:);
+        % initializing T
+        T(:,iterTrack) = thetaInit;
 
-        %idx = Uidx{iterUser};
-        % finding constant to rescale prediction by to account for
-        % missing features
-        %renorm = sqrt(T(:,iterTrack)'*T(:,iterTrack))/sqrt(T(idx,iterTrack)'*T(idx,iterTrack));
+        % Looping through the users who rated the track
+        for iterUser = MTidx{iterTrack}
         
-        % learning weights for track
-        predictedRating = userProfile*T(:,iterTrack);%*renorm;
-        diff = actualRating - predictedRating;
-        %update T
-        T(:,iterTrack) = T(:,iterTrack)...
-                            + gamma*(diff*userProfile' - lambda1*T(:,iterTrack));
-                        
-        % learning latent features for users
-        predictedRating = userProfile*T(:,iterTrack);%*renorm;
-        diff = actualRating - predictedRating;
-        
-        U(iterUser,:) = userProfile+gamma*(diff*T(:,iterTrack)' - lambda2*userProfile);
-        
+            actualRating = M(iterUser,iterTrack);
+            %for each track a user has rated, 
+            
+            % initializing U with UserProfile
+            userProfile = UserProf(iterUser,:);
+            %userProfile = Uinit;
+
+
+            % making a prediction
+            predictedRating = userProfile*T(:,iterTrack);
+            
+            diff = actualRating - predictedRating;
+            
+            %updating T
+            T(:,iterTrack) = T(:,iterTrack)...
+                                + gamma*(diff*userProfile' - lambda1*T(:,iterTrack));
+
+            % learning latent features for users
+            predictedRating = userProfile*T(:,iterTrack);
+            diff = actualRating - predictedRating;
+            
+            % updating U
+            U(iterUser,:) = userProfile+gamma*(diff*T(:,iterTrack)' - lambda2*userProfile);
+        end
         
     end
     
-end
+%end
 iter =  iter + 1;   
 toc;
 end

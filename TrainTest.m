@@ -1,4 +1,4 @@
-function [error,pred_y,correct_y,T,U,train,test] = TrainTest(lambda1,lambda2,gamma,niter)
+function [error,pred_y,correct_y,T,U,train,test,coldStart_idx,newUser_idx,newTrack_idx,warmStart_idx] = TrainTest(lambda1,lambda2,gamma,niter, test_idx)
 
 % data_users = load('data_users.mat');
 % data_words = load('data_words.mat');
@@ -52,7 +52,7 @@ M = M.M;
 Aidx = Aidx.Aidx;
 Tidx = Tidx.Tidx;
 AUidx = AUidx.AUidx;
-test = test.test;
+test = test.test(:,:);
 train = train.train;
 
 
@@ -65,7 +65,7 @@ fprintf('loaded files')
 
 %predict the ratings for the next 12 months
 %pred_y = MFpredict_latent(T,test,U,Aidx);
-[pred_y] = MFpredict(T,test,U,Tidx,Aidx,AUidx,UserProf,WordProf);
+[pred_y,coldStart_idx,newUser_idx,newTrack_idx,warmStart_idx] = MFpredict(T,test,U,Tidx,Aidx,AUidx,UserProf,WordProf);
 
 correct_y = test(:,4);
 error = rmse(pred_y,correct_y);
