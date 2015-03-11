@@ -1,4 +1,4 @@
-function [error,lambda,gamma] = MFcross_validation(Xtrain,N,lambda,gamma)
+function [error] = MFcross_validation()
 
 % INPUTS
 % Xtrain       training data of user ratings

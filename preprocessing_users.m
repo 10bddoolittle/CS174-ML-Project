@@ -14,7 +14,7 @@ N = 28; %# of columns including and additional column added for parsing
 %invalid input counter
 invalidCounter = 0;
 %constant to be used for marking empty entries in fields
-constantMarker = -1;
+constantMarker = 0;
 
 %empty cell initialization
 data = cell(1,48646);

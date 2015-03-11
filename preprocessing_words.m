@@ -7,7 +7,7 @@ N = 88;
 eof_status = feof(fileID_words);
 
 
-mark = -1;
+mark = 0;
 
 i = 0;
 data = cell(1,118302);
@@ -136,4 +136,4 @@ wrong_word
 wrong_heard_of
 wrong_own_artist_music
 
-save('data_words','data_words','-append')
+save('data_words','data_words')

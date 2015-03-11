@@ -1,4 +1,4 @@
-function [T,U,Uidx] = MFtrain(M,UserProf,lambda1,lambda2,gamma,niter)
+function [T,U] = MFtrain(M,UserProf,lambda1,lambda2,gamma,niter)
 % learns weights for each track
 
 % Input
@@ -17,7 +17,8 @@ tic;
 
 %assign the initialized theta
 
-
+%idx = [74:91];
+%nFeatures = length(idx);
 
 T = zeros(nFeatures ,nTracks);
 U = zeros(nUsers, nFeatures);
@@ -32,13 +33,13 @@ Utrainidx = [];
 
 % taking care of missing data (-1's)
 for iterUser = 1:nUsers
-    userProfile = UserProf(iterUser,:);
+    %userProfile = UserProf(iterUser,:);
     
     % finding -1's
-    markidx = find(userProfile == -1);
+    %markidx = find(userProfile == -1);
     
     % store indexes of -1's in cell Uidx
-    Uidx{iterUser} =  setdiff([1:nFeatures],markidx);
+    %Uidx{iterUser} =  setdiff([1:nFeatures],markidx);
     
     
     Mrow = M(iterUser,:);
@@ -88,24 +89,24 @@ for iterTrack = Ttrainidx
         
         userProfile = UserProf(iterUser,:);
 
-        idx = Uidx{iterUser};
+        %idx = Uidx{iterUser};
         % finding constant to rescale prediction by to account for
         % missing features
-        renorm = sqrt(T(:,iterTrack)'*T(:,iterTrack))/sqrt(T(idx,iterTrack)'*T(idx,iterTrack));
+        %renorm = sqrt(T(:,iterTrack)'*T(:,iterTrack))/sqrt(T(idx,iterTrack)'*T(idx,iterTrack));
         
         % learning weights for track
-        predictedRating = userProfile(idx)*T(idx,iterTrack)*renorm;
+        predictedRating = userProfile*T(:,iterTrack);%*renorm;
         diff = actualRating - predictedRating;
         %update T
-        T(idx,iterTrack) = T(idx,iterTrack)...
-                            + gamma*(diff*userProfile(idx)' - lambda1*T(idx,iterTrack));
+        T(:,iterTrack) = T(:,iterTrack)...
+                            + gamma*(diff*userProfile' - lambda1*T(:,iterTrack));
                         
         % learning latent features for users
-        predictedRating = userProfile(idx)*T(idx,iterTrack)*renorm;
+        predictedRating = userProfile*T(:,iterTrack);%*renorm;
         diff = actualRating - predictedRating;
         
-        U(iterUser,idx) = userProfile(idx)+gamma*(diff*T(idx,iterTrack)' - lambda2*userProfile(idx));
-        idx = 0;
+        U(iterUser,:) = userProfile+gamma*(diff*T(:,iterTrack)' - lambda2*userProfile);
+        
         
     end
     

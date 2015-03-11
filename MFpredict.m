@@ -1,4 +1,4 @@
-function [pred_y] = MFpredict(T,Xtest,U,Markidx,Tidx,Aidx,AUidx,UserProf,WordProf)
+function [pred_y] = MFpredict(T,Xtest,U,Tidx,Aidx,AUidx,UserProf,WordProf)
 % predicts rating for new set of users
 
 % INPUT 
@@ -34,7 +34,7 @@ for i = 1:m
     tidx = predT(i)+1;
     aidx = predA(i)+1;
     
-    idx = Markidx{uidx};
+    %idx = Markidx{uidx};
     
     if U(uidx,:)*U(uidx,:)' == 0
         if T(:,tidx)'*T(:,tidx) == 0
@@ -60,9 +60,9 @@ for i = 1:m
     % finding constant to rescale prediction by to account for
     % missing features
 
-    renorm = sqrt(Tl'*Tl)/sqrt(Tl(idx)'*Tl(idx));
+    %renorm = sqrt(Tl'*Tl)/sqrt(Tl(idx)'*Tl(idx));
 
-    pred_y(i) = Ul*Tl*renorm;
+    pred_y(i) = Ul*Tl; %*renorm;
  
        
     

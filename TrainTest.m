@@ -59,13 +59,13 @@ train = train.train;
 
 fprintf('loaded files')
 
-[T,U,Markidx] = MFtrain(M,UserProf,lambda1,lambda2,gamma,niter);
+[T,U] = MFtrain(M,UserProf,lambda1,lambda2,gamma,niter);
 
 
 
 %predict the ratings for the next 12 months
 %pred_y = MFpredict_latent(T,test,U,Aidx);
-[pred_y] = MFpredict(T,test,U,Markidx,Tidx,Aidx,AUidx,UserProf,WordProf);
+[pred_y] = MFpredict(T,test,U,Tidx,Aidx,AUidx,UserProf,WordProf);
 
 correct_y = test(:,4);
 error = rmse(pred_y,correct_y);
