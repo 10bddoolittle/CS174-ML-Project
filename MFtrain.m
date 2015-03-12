@@ -87,6 +87,8 @@ tic;
             actualRating = M(iterUser,iterTrack);
             %for each track a user has rated, 
             
+            
+
             % initializing U with UserProfile
             userProfile = UserProf(iterUser,:);
             %userProfile = Uinit;
