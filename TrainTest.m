@@ -1,4 +1,4 @@
-function [error,pred_y,correct_y,T,U,train,test,coldStart_idx,newUser_idx,newTrack_idx,warmStart_idx,rmse1,rmse2] = TrainTest(lambda1,lambda2,gamma,niter, test_idx)
+function [error,pred_y,correct_y,T,U,rmse1,rmse2] = TrainTest(lambda1,lambda2,gamma,niter)
 
 % data_users = load('data_users.mat');
 % data_words = load('data_words.mat');
@@ -40,8 +40,10 @@ function [error,pred_y,correct_y,T,U,train,test,coldStart_idx,newUser_idx,newTra
 WordProf = load('WordProf.mat');
 UserProf = load('UserProf.mat');
 M = load('M.mat');
+Uidx = load('Uidx.mat');
 Aidx = load('Aidx.mat');
 Tidx = load('Tidx.mat');
+UAidx = load('UAidx.mat');
 AUidx = load('AUidx.mat');
 train = load('train.mat');
 test = load('test.mat');
@@ -51,6 +53,8 @@ UserProf = UserProf.UserProf;
 M = M.M;
 Aidx = Aidx.Aidx;
 Tidx = Tidx.Tidx;
+Uidx = Uidx.Uidx;
+UAidx = UAidx.UAidx;
 AUidx = AUidx.AUidx;
 test = test.test(:,:);
 train = train.train;
@@ -59,7 +63,7 @@ train = train.train;
 
 fprintf('loaded files')
 
-[T,U,rmse1,rmse2] = MFtrain(M,UserProf,lambda1,lambda2,gamma,niter);
+[T,U,rmse1,rmse2] = MFtrain(M,UserProf,Uidx,Tidx,lambda1,lambda2,gamma,niter);
 
 
 

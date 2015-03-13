@@ -1,4 +1,4 @@
-function [T,U,rmse1,rmse2] = MFtrain(M,UserProf,lambda1,lambda2,gamma,niter)
+function [T,U,Utrainidx,Ttrainidx,rmse1,rmse2] = MFtrain(M,UserProf,Uidx,Tidx,lambda1,lambda2,gamma,niter)
 % uses matrix factorization to learn weights for users and tracks
 
 % Input
@@ -21,6 +21,9 @@ tic;
 %idx = [74:91];
 %nFeatures = length(idx);
 
+
+
+
 T = zeros(nFeatures ,nTracks);
 U = zeros(nUsers, nFeatures);
 
@@ -35,35 +38,17 @@ Utrainidx = [];
 
 
 for iterUser = 1:nUsers
-     
-    % already have this information, get from MFratings
-    Mrow = M(iterUser,:);
-    
-    markidx = find(Mrow == -1);
-    
-    % indices of rows of M that are rated
-    MUidx{iterUser} = setdiff([1:nTracks],markidx);
-    
-    if ~isempty(MUidx{iterUser})
+         
+    if ~isempty(Uidx{iterUser})
         UTrainidx = cat(2,Utrainidx,iterUser);
     else
     end
-        
-        
-    
+       
 end
 
 for iterTrack = 1:nTracks
     
-    %Already have this information, get it from MFratings
-    Mcol = M(:,iterTrack);
-    
-    markidx = find(Mcol == -1);
-    
-    % indices of cols of M that are rated
-    MTidx{iterTrack} = setdiff([1:nUsers],markidx);
-    
-    if ~isempty(MTidx{iterTrack})
+    if ~isempty(Tidx{iterTrack})
         Ttrainidx = cat(2,Ttrainidx,iterTrack);
     else
     end
@@ -87,9 +72,9 @@ tic;
         end
 
         % Looping through the users who rated the track
-        for iterUser = MTidx{iterTrack}
+        for iterUser = Tidx{iterTrack}
         
-            actualRating = M(iterUser,iterTrack);
+            actualRating = M(iterUser,iterTrack); 
             %for each track a user has rated, 
             correct(lit_it) = actualRating;
             
@@ -115,6 +100,8 @@ tic;
             %updating T
             T(:,iterTrack) = T(:,iterTrack)...
                                 + gamma*(diff*userProfile' - lambda1*T(:,iterTrack));
+                            
+           
 
             % learning latent features for users
             predictedRating = userProfile*T(:,iterTrack);

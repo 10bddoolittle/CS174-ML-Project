@@ -74,10 +74,9 @@ function [latentFeatures_User,latentFeatures_Track,count] = find_usertrack_laten
     else
         count = count + 1;
         [m,n] = size(U(1,:));
-        latentFeatures_User = zeros(1,n);
+        latentFeatures_User = ones(1,n);
         latentFeatures_Track = zeros(n,1);
-        latentFeatures_User(1,1) = 30;
-        latentFeatures_Track(1,1) = 1;
+        latentFeatures_track = coldStartTrack(wordProfile, AUidx,Aidx, T);
         
     end
 
