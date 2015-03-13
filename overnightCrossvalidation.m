@@ -34,18 +34,20 @@ function error = overnightCrossvalidation(lambda1,lambda2,gamma,niter)
             for iterGamma = 1:length(gamma)
                 for iter = 1:length(niter)
                     %train the model    
-                    [T,U,Markidx] = MFtrain(M,UserProf,lambda1(iterLambda1),...
+                    [T,U,rmse1,rmse2] = MFtrain(M,UserProf,lambda1(iterLambda1),...
                                             lambda2(iterLambda2),gamma(iterGamma),niter(iter));
 
                     %predict the ratings for the next 12 months
                     %pred_y = MFpredict_latent(T,test,U,Aidx);
-                    [pred_y] = MFpredict(T,test,U,Markidx,Tidx,Aidx,AUidx,UserProf,WordProf);
+                    [pred_y] = MFpredict(T,test,U,Tidx,Aidx,AUidx,UserProf,WordProf);
 
                     correct_y = test(:,4);
                     error(iterLambda1,iterLambda2,iterGamma,iter) = rmse(pred_y,correct_y);
-
+                    train_err(iterLambda1,iterLambda2,iterGamma,iter) = rmse2(niter);
+                    
                     %save after each iteration
-                    save('overnightCrossvalidation','error');
+                    save('cross_val_test_error','error');
+                    save('cross_val_train_error','train_err');
                 end
             end
         end

@@ -1,4 +1,4 @@
-function [error,pred_y,correct_y,T,U,train,test,coldStart_idx,newUser_idx,newTrack_idx,warmStart_idx] = TrainTest(lambda1,lambda2,gamma,niter, test_idx)
+function [error,pred_y,correct_y,T,U,train,test,coldStart_idx,newUser_idx,newTrack_idx,warmStart_idx,rmse1,rmse2] = TrainTest(lambda1,lambda2,gamma,niter, test_idx)
 
 % data_users = load('data_users.mat');
 % data_words = load('data_words.mat');
@@ -59,7 +59,7 @@ train = train.train;
 
 fprintf('loaded files')
 
-[T,U] = MFtrain(M,UserProf,lambda1,lambda2,gamma,niter);
+[T,U,rmse1,rmse2] = MFtrain(M,UserProf,lambda1,lambda2,gamma,niter);
 
 
 

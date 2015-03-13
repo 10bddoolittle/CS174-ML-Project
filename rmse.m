@@ -1,4 +1,4 @@
-function error = rmse(pred_Y, correct_Y)
+function [rms,diff] = rmse(pred_Y, correct_Y)
 
 % Inputs:
 % pred_Y:    [m x 1], vector of predicted track ratings
@@ -9,6 +9,8 @@ function error = rmse(pred_Y, correct_Y)
 
 m = size(pred_Y,1);
 
-error = sqrt((1/m)*sum((pred_Y - correct_Y).^2));
+diff = correct_Y - pred_Y;
+
+rms = sqrt((1/m)*sum((diff).^2));
 
 end
