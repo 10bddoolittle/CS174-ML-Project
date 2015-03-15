@@ -53,7 +53,7 @@ for j = 1:l
         group = Xtest(j,:);
         
         % this is cheating, uses correct result to fill in average     
-        avg(j,1) = Xtest(j,4);
+        avg(j,1) = 30;
         
         % TODO: find an average to use if 'mode' has no examples
                 % needs to be implemented for each user, artist, track,
