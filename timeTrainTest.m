@@ -35,13 +35,14 @@ UserProf = MFusers(M,user_profile);
 
 fprintf('finding WordProf')
 
-[WordProf,AUidx,UAidx] = MFartists(M,A,words_profile);
+[ArtistProf, WordProf,AUidx,UAidx] = MFartists(M,A,words_profile);
 %train the model on ratings for first 12 months
 %[T,U] = MFtrain_latent(M,0.01,0.01,150);
 
 
 
 save('WordProf','WordProf')
+save('ArtistProf','ArtistProf')
 save('UserProf','UserProf')
 save('M','M')
 save('A','A')

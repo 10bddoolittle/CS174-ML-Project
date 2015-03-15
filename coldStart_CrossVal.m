@@ -80,7 +80,7 @@ idxperm = randperm(len);
 err_sum = 0;
 
 fprintf('Running Cross Validation Test...');
-for j = 0:(N-1)
+for j = 0
     
     
     Atest_idx = idxperm([floor(len / N * j + 1) : floor(len / N * (j + 1))]);
@@ -110,20 +110,23 @@ for j = 0:(N-1)
     % Initializing UserProf
     UserProf = MFusers(M,user_profile);
     
-    % Initializing WordProf
-    [WordProf,AUidx,UAidx] = MFartists(M,A,words_profile);
+    % Initializing WordProf and ArtistProf
+    [ArtistProf, WordProf,AUidx,UAidx] = MFartists(M,A,words_profile);
     toc;
     
     fprintf('Training...');
     tic;
     % Finding latent features of training set
-    [T,U,rmse1,rmse2] = MFtrain(M,UserProf,lambda1,lambda2,gamma,niter);
+    [T,U,Utrainidx,Ttrainidx,rmse1,rmse2] = MFtrain(M,UserProf,Uidx,Tidx,lambda1,lambda2,gamma,niter);
+    %function [T,U,Utrainidx,Ttrainidx,rmse1,rmse2] = MFtrain(M,UserProf,Uidx,Tidx,lambda1,lambda2,gamma,niter)
+    
     toc;
     
     fprintf('Testing...');
     tic;
     % making prediction
-    [pred_y,coldStart_idx,newUser_idx,newTrack_idx,warmStart_idx] = MFpredict(T,test,U,Tidx,Aidx,AUidx,UserProf,WordProf);
+    [pred_y,coldStart_idx,newUser_idx,newTrack_idx,warmStart_idx] =...
+        MFpredict(T,test,U,Tidx,Aidx,AUidx,UserProf,WordProf,ArtistProf,Utrainidx,Ttrainidx);
     toc;
     
     % finding error
@@ -131,11 +134,10 @@ for j = 0:(N-1)
     err = rmse(pred_y,correct_y);
     
     err_sum = err_sum + err;
+    saveError(j+1,1) = err;
+    save('ColdstartError','saveError');
 end
 
 error = err_sum/N;
-
-
-
 
 end

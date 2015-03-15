@@ -1,4 +1,12 @@
-function [latentFeatures_User,latentFeatures_Track,count] = find_usertrack_latent(newUserIdx,aidx,newTrackIdx, U,T,Tidx,Aidx,AUidx,userProfile,wordProfile,mode,count)
+function [latentFeatures_User,latentFeatures_Track,count] ...
+        = find_usertrack_latent(newUserIdx,aidx,newTrackIdx,U,T,Aidx,AUidx, Tidx,UserProf,WordProf,ArtistProf,Utrainidx,Ttrainidx,count)
+
+    %old calls for reference
+% find_usertrack_latent(newUserIdx,aidx,newTrackIdx, U,T,Tidx,Aidx,Aidx_cell,AUidx,AUidx_cell, userProfile,wordProfile,artistProfile,mode,count)
+% passed before: (uidx,aidx,tidx,U,T,Tidx{tidx},Aidx{aidx},Aidx,AUidx{aidx},AUidx,UserProf,WordProf,ArtistProf,'option2',count);          
+
+
+            
 %INPUT
 % newUserIdx  :    index of the new user
 % newTrackIdx :    index of the new track
@@ -15,70 +23,36 @@ function [latentFeatures_User,latentFeatures_Track,count] = find_usertrack_laten
 % latentFeatures_User: the estimated latent features of the new user
 % latentFeatures_Track: estimated latent track for the new user 
     
+    Aidx_cell = Aidx;
+    Aidx = Aidx{aidx};
+    Tidx = Tidx{newTrackIdx};
+    AUidx_cell = AUidx;
+    
     %other tracks of the same artist
     artist_tracks_idx = Aidx;
-    artist_tracks = T(:,artist_tracks_idx);
     
-    %other users who have rated the same track
-    user_tracks_idx = Tidx;
-    user_tracks = U(user_tracks_idx,:);
+    artistIdx = aidx;
+    userIdx = newUserIdx;
     
-    [artistTracksRow, artistTracksCol] = size(artist_tracks_idx);
-    [userTrackRow, userTrackCol] = size(user_tracks_idx);
-    
+    %unknown user, known artist
     if(~isempty(artist_tracks_idx))
-        if strcmp(mode,'Mean')
-            
             %average latent feature of these tracks
-            latentFeatures_Track = mean(artist_tracks,2);
-            if isempty(user_tracks_idx)
-                %vector containing users who have rated the same artist
-                neighbors_idx = AUidx; 
-                
-                User_set = U(neighbors_idx,:);
-                
-                hist_idx = find(sum(User_set == 0,2) < length(U(1,:)));
-                
-                latentFeatures_User = mean(U(hist_idx,:));
-            else
-                %averge of users who have rated other tracks by same artist     
-                latentFeatures_User = mean(user_tracks);
-            end
-
-        elseif strcmp(mode, 'option2')
-            %latent features from the most recently rated track
-            latentFeatures_Track = find_track_latent(Aidx, T, 'average');
+            latentFeatures_Track = find_track_latent(aidx, T, 'average',ArtistProf,Aidx_cell);
+            latentFeatures_User = find_user_latent(newUserIdx,Tidx,U,UserProf,'correlatedUser',Utrainidx);
+            fprintf('unknown user,known artist : %d \n',count);
             
-            %vector containing users who have rated the same artist
-            neighbors_idx = AUidx; 
-            
-            User_set = U(neighbors_idx,:);
-
-            hist_idx = find(sum(User_set == 0,2) < length(U(1,:)));
-            
-            user_wordProfile = reshape(wordProfile(newUserIdx,aidx,:),[92,1]);
-            
-            
-            for i = 1:length(hist_idx)
-                
-                
-                neighbors(i,:) = reshape(wordProfile(hist_idx(i),aidx,:),[1,92]);
-               
-            end
-            
-            correlated_neighbors = neighbors*user_wordProfile;
-            [~,I] = max(correlated_neighbors);
-            latent_user_idx = hist_idx(I);
-            latentFeatures_User = U(latent_user_idx,:);
-        end
+    %unknown user, unknown artist(no other tracks by the artist)
     else
-        count = count + 1;
-        [m,n] = size(U(1,:));
-        latentFeatures_User = ones(1,n);
-        latentFeatures_Track = zeros(n,1);
-        latentFeatures_track = coldStartTrack(wordProfile, AUidx,Aidx, T);
+        %new user, new artist
+        fprintf ('unknown user,unknown artist : %d \n',count);
+        [latentFeatures_User,latentFeatures_Track] = ...
+            find_usertrackartist_latent(artistIdx,userIdx,UserProf,ArtistProf,AUidx_cell,Aidx_cell,U,T,Utrainidx,Ttrainidx);
         
     end
+    count = count + 1;
+
+end
+
 
 
 

@@ -1,4 +1,5 @@
-function [pred_y,coldStart_idx,newUser_idx,newTrack_idx,warmStart_idx] = MFpredict(T,Xtest,U,Tidx,Aidx,AUidx,UserProf,WordProf)
+function [pred_y,coldStart_idx,newUser_idx,newTrack_idx,warmStart_idx] = MFpredict(T,Xtest,U,Tidx,Aidx,AUidx,UserProf,WordProf,ArtistProf,Utrainidx,Ttrainidx)
+
 % predicts rating for new set of users
 
 % INPUT 
@@ -33,10 +34,10 @@ new_track_it = 1;
 new_user_it = 1;
 warm_it = 1;
 % for each example in Xtest
+fprintf('in MFpredict now.. \n');
 for i = 1:m
-    
-    i
-    m
+    %i
+    %m
     % Findig User, Track, and Artist id's
     uidx = predU(i)+1;
     tidx = predT(i)+1;
@@ -46,36 +47,52 @@ for i = 1:m
     
     % Cold start case logic
     if U(uidx,:)*U(uidx,:)' == 0
+        
+        %unknown user, unknown track
         if T(:,tidx)'*T(:,tidx) == 0
             coldStart_idx(cold_it) = i;
             cold_it = cold_it + 1;
             %reference
-            %find_usertrack_latent(newUserIdx,newTrackIdx, U,T,Tidx,Aidx,userProfile,wordProfile,mode)
-            [Ul,Tl,count] = find_usertrack_latent(uidx,aidx,tidx,U,T,Tidx{tidx},Aidx{aidx},AUidx{aidx},UserProf,WordProf,'Mean',count);          
+            % fxn call parameters: (uidx,aidx,tidx,U,T,Tidx{tidx},Aidx{aidx},Aidx,AUidx{aidx},AUidx,UserProf,WordProf,ArtistProf,'option2',count);          
+            fprintf('U,T = 0, calling find_usertrack_latent \n');
+            %[Ul,Tl,count] = find_usertrack_latent(uidx,aidx,tidx,U,T,Aidx,AUidx,Tidx,UserProf,WordProf,ArtistProf,Utrainidx,Ttrainidx,count);
+            Ul = find_user_latent(uidx,Tidx,U,UserProf,'correlatedUser',Utrainidx);
+            Tl = find_track_latent(aidx, T, 'average',ArtistProf,Aidx);
+            correctionFactor = -20;
+        
+        %unknown user, known track    
         else
             newUser_idx(new_user_it) = i;
             new_user_it = new_user_it + 1;
-            Ul = find_user_latent(uidx,Tidx{tidx},U,UserProf,'Mean');                
+            fprintf('U =0, T ~= 0, calling find_user_latent \n');
+            Ul = find_user_latent(uidx,Tidx{tidx},U,UserProf,'correlatedUser',Utrainidx);                
             Tl = T(:,tidx);
+            correctionFactor = 0;
         end
     
     else   
+        %known user, unknown track
         if T(:,tidx)'*T(:,tidx) == 0
             newTrack_idx(new_track_it) = i;
             new_track_it = new_track_it + 1;
-            Tl = find_track_latent(Aidx{aidx},T,'average');
+            fprintf('U ~= 0, T = 0, calling find_track_latent \n');
+            Tl = find_track_latent(aidx,T,'average',ArtistProf,Aidx);
             Ul = U(uidx,:);
+            correctionFactor = 0;
+        %known user, known track
         else
             warmStart_idx(warm_it) = i;
             warm_it = warm_it + 1;
+            fprintf('Known U, known T, calculating the rating \n');
             Tl = T(:,tidx);
             Ul = U(uidx,:);
+            correctionFactor = 0;
         end
     end
     
 
     % making prediction
-    pred_y(i) = Ul*Tl; 
+    pred_y(i) = Ul*Tl + correctionFactor; 
  
        
     % Limiting values to 0 to 100

@@ -12,7 +12,6 @@ data_train = load('data_train.mat');
 data_users = load('data_users.mat');
 data_words = load('data_words.mat');
 
-
 Xtrain = data_train.train;
 user_profile = data_users.data_users;
 words_profile = data_words.data_words;
@@ -46,22 +45,18 @@ N = 10;
             % creating the set of indices used for validation
             Xt = setdiff(idxperm,Xtest); 
 
-            
-
             test = Xtrain(Xtest,:);
             train = Xtrain(Xt,:);
             
-           
             [M,Uidx,Tidx,Aidx,A] = MFratings(train,maxArtist,maxTrack,maxUser);
-            
-            
             UserProf = MFusers(M,user_profile);
             
-            [WordProf,AUidx,UAidx] = MFartists(M,A,words_profile);
+            [ArtistProf,WordProf,AUidx,UAidx] = MFartists(M,A,words_profile);
             
             
             save('WordProf','WordProf')
             save('UserProf','UserProf')
+            save('ArtistProf','ArtistProf')
             save('M','M')
             save('A','A')
             save('Aidx','Aidx')

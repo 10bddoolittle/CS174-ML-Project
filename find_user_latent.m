@@ -1,4 +1,4 @@
-function userLatentProfile = find_user_latent(newUserIdx,Tidx,U,UserProfile,mode)
+function userLatentProfile = find_user_latent(newUserIdx,Tidx,U,UserProf,mode,Utrainidx)
 %INPUT
 % newUserIdx  :    index of the new user
 % Tidx{i}     :    cell contains the indices of users who have rated track {i}
@@ -9,27 +9,41 @@ function userLatentProfile = find_user_latent(newUserIdx,Tidx,U,UserProfile,mode
 %OUTPUT
 %latentUserIdx : (latent) index of the user who is estimated as the best
 %representation for the new user. 
+    
+    %average latent features of users who have rated the track
     if strcmp(mode,'Mean')    
-%        userLatentProfile = 0;
-%         for i = 1:length(Tidx)
-%             %find the crossproduct of user
-%             userLatentProfile = userLatentProfile + U(Tidx(i),:); 
-%         end
-%             userLatentProfile = userLatentProfile./(length(userLatentProfile));
-            
         userLatentProfile = sum(U(Tidx,:))/length(Tidx);
-
-    elseif strcmp(mode,'NearestNeighbor')
-        %profile of new user
-        newUser = UserProfile(newUserIdx,:);
-        %users who have rated the same track
-        neighbors = UserProfile(Tidx,:);
-        %dot product between the user and neighbors 
-        neighborDistance = neighbors*newUser';
-        [~,idx] = max(neighborDistance);
-        %index of the user's selected latent feature
-        latentUserIdx = Tidx(idx);
-        %pass the output parameter
+    
+    %latent features of the most similar user
+    elseif strcmp(mode,'correlatedUser')
+       %find the latent feature of the user
+        %user profile
+        user_profile = UserProf(newUserIdx,:);
+        if norm(user_profile) ~= 0
+            user_profile = user_profile/norm(user_profile);
+        else
+            fprintf('userprofile for user %d is empty /n',newUserIDx);
+        end
+        %possible neighbors of the unknown user, i.e users who are in U
+        user_neighbor = UserProf(Utrainidx,:);
+        
+        %normalize the neighbor vectors
+        normFactor = sqrt(sum(user_neighbor.^2,2));
+        %magnitude matrix of the same size as user_neighbor
+        normFactor = repmat(normFactor,[1,size(user_neighbor,2)]);
+        
+        %check if there are any zero vectors
+        zeroVectorIdx = find(sum(normFactor,2)== 0);
+        if isempty(zeroVectorIdx)
+            %normalize artist_neighbor
+            user_neighbor = user_neighbor./normFactor;
+        else
+            fprintf('user neighbor is empty in find_userlatent \n');
+        end
+        
+        [~,correlatedUser] = max(user_neighbor*user_profile');
+        latentUserIdx = Utrainidx(correlatedUser);
         userLatentProfile = U(latentUserIdx,:);
+
     end     
 end     

@@ -14,19 +14,12 @@ tic;
 [nUsers,nTracks] = size(M); 
 [~,nFeatures] = size(UserProf);
 
-
-
-
 %nFeatures = 5;
 %idx = [74:91];
 %nFeatures = length(idx);
 
-
-
-
 T = zeros(nFeatures ,nTracks);
 U = zeros(nUsers, nFeatures);
-
 
 % initial conditions for U and T
 %thetaInit = rand(nFeatures,1);
@@ -40,7 +33,7 @@ Utrainidx = [];
 for iterUser = 1:nUsers
          
     if ~isempty(Uidx{iterUser})
-        UTrainidx = cat(2,Utrainidx,iterUser);
+        Utrainidx = cat(2,Utrainidx,iterUser);
     else
     end
        

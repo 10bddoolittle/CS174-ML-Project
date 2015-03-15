@@ -1,0 +1,77 @@
+function latentFeatures_Track = find_track_latent(newArtistIdx,T,mode,ArtistProf,Aidx_cell)
+
+% INPUTS:
+% Aidx       vector that contains the indices of tracks by the artist
+% T          indexed latent features for tracks
+% mode       string can be 'average' or 'recent'
+
+
+% OUTPUT:
+% Tl         latent feature for the new track
+
+
+% matrix containing latent feature vectors for tracks by same artist
+Aidx = Aidx_cell{newArtistIdx};
+Tset = T(:,Aidx);
+
+[m,n] = size(Tset);
+
+% Taking average of tracks by artist
+if strcmp(mode,'average')
+    if ~isempty()
+    latentFeatures_Track = sum(Tset,2)/n;
+    
+% Taking most rectent track
+elseif strcmp(mode,'recent')
+    latentFeatures_Track = Tset(:,n);
+
+elseif strcmp(mode,'newArtist')
+    %find the latent feature of the track
+        %artists profile
+        artist_profile = ArtistProf(artistIdx,:);
+        artist_profile = artist_profile/norm(artist_profile);
+        
+        %find index of artists that have been rated by users
+        rowCounter = 1;
+        for i = 1:length(Aidx)
+            if (~ isempty(Aidx{i}))
+                artist_neighbor_idx(rowCounter,1) = i;
+                rowCounter = rowCounter + 1;
+            end
+        end
+        
+        artist_neighbor = ArtistProf(artist_neighbor_idx,:);
+        %a column, each element is the magnitude of corresponding row in
+        %artist_neighbor
+        normFactor = sqrt(sum(artist_neighbor.^2,2));
+        %magnitude matrix of the same size as artist_neighbor
+        normFactor = repmat(normFactor,[1,size(artist_neighbor,2)]);
+        
+        %check if there are any zero vectors
+        zeroVectorIdx = find(sum(normFactor,2)== 0);
+        if isempty(zeroVectorIdx)
+            %normalize artist_neighbor
+            artist_neighbor = artist_neighbor./normFactor;
+        else
+            fprintf('one or more neighbors of artist %d is empty /n',artistIdx);
+        end
+        [~,similarArtistIdx] = max(artist_neighbor*artist_profile');
+        latentArtistIdx = artist_neighbor_idx(similarArtistIdx);
+        
+        %songs composed by the latentArtistIdx
+        trackIdx = Aidx{latentArtistIdx};
+        if ~ isempty(trackIdx)
+            %average of the latent features of the tracks by the artist
+            latentFeatures_track = mean(T(:,trackIdx),2);
+        else
+            fprintf('estimated artist %d doesnt have any tracks /n ',latentArtistIdx);
+            latentFeatures_track = (1/91)*ones(91,1);
+        end
+else 
+    fprintf('input must be "average" or "recent"');
+end
+
+    
+        
+
+end
