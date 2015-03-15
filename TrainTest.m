@@ -1,5 +1,5 @@
 function [error,pred_y,correct_y,T,U,train,test,coldStart_idx,newUser_idx,newTrack_idx,warmStart_idx,rmse1,rmse2] ...
-        = TrainTest(lambda1,lambda2,gamma,niter, test_idx)
+        = TrainTest(lambda1,lambda2,gamma,niter)
 
 WordProf = load('WordProf.mat');
 UserProf = load('UserProf.mat');
